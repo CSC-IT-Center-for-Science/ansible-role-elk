@@ -5,23 +5,23 @@
   - name: install software from default installed repos (epel and centos)
     # If we set state=latest this takes a long time to run.
     yum: "pkg={{item}} state=installed"
-    with_items: programs_to_install
+    with_items: "{{ programs_to_install }}"
 
   - name: enable services on boot
     service: name={{item}} enabled=yes
-    with_items: programs_on_boot
+    with_items: "{{ programs_on_boot }}"
 
   - name: Create Groups
     group: "name={{item.name}} gid={{item.gid}}"
-    with_items: cscgroups
+    with_items: "{{ cscgroups }}"
 
   - name: Create elasticsearch user
     user: "name={{item.name}} uid={{item.uid}} group={{item.group}} groups={{item.groups}} shell={{item.shell}}"
-    with_items: esuser
+    with_items: "{{ esuser }}"
 
   - name: Add logstash user to a group
     user: "name={{item.name}} groups={{item.groups}}"
-    with_items: lsuser
+    with_items: "{{ lsuser }}"
     when: add_logstash_user == "yes"
 
   - name: increase amount of open files
@@ -33,8 +33,8 @@
     register: elasticrepo
     when: ansible_os_family == "RedHat" and add_es_repofile == "yes"
 
-  - name: add elasticsearch GPG key
-    template: src=GPG-KEY-elasticsearch dest=/etc/pki/rpm-gpg/GPG-KEY-elasticsearch owner=root group=root mode=0644
+  - name: copy elasticsearch GPG key
+    copy: src=GPG-KEY-elasticsearch dest=/etc/pki/rpm-gpg/GPG-KEY-elasticsearch owner=root group=root mode=0644
     register: elastickey
     when: ansible_os_family == "RedHat" and add_es_repogpgkey == "yes"
 
