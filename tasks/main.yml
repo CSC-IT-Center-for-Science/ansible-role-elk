@@ -26,6 +26,7 @@
 
   - name: increase amount of open files
     template: src=92-elk.conf dest=/etc/security/limits.d/92-elk.conf owner=root group=root mode=0644
+    when: add_es_nofiles == "yes"
 
   - name: add elasticsearch repo
     template: src=elasticsearch.repo dest=/etc/yum.repos.d/elasticsearch.repo owner=root group=root mode=0644
